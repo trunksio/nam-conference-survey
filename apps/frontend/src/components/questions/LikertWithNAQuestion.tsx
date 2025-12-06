@@ -82,6 +82,7 @@ export function LikertWithNAQuestion({
           <AudioControls
             questionText={question}
             questionType="likert-na"
+            questionOptions={allOptions.map((o) => o.label)}
             onAnswerCaptured={handleAudioAnswer}
           />
         )}

@@ -71,6 +71,7 @@ export function LikertQuestion({
           <AudioControls
             questionText={question}
             questionType="likert"
+            questionOptions={options.map((o) => o.label)}
             onAnswerCaptured={handleAudioAnswer}
           />
         )}

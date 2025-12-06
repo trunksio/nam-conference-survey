@@ -45,9 +45,15 @@ export function AudioControls({
 
     // Add options for choice questions
     if (questionType === 'likert' || questionType === 'likert-na') {
-      textToSpeak += '. Options are: 1 - Strongly Disagree, 2 - Disagree, 3 - Neutral, 4 - Agree, 5 - Strongly Agree.';
-      if (questionType === 'likert-na') {
-        textToSpeak += ' Or say "Not Applicable" to skip.';
+      if (questionOptions.length > 0) {
+        // Use actual options from the question (includes N/A for likert-na)
+        textToSpeak += '. Options are: ' + questionOptions.join(', ') + '.';
+      } else {
+        // Fallback to default labels if no options provided
+        textToSpeak += '. Options are: 1 - Strongly Disagree, 2 - Disagree, 3 - Neutral, 4 - Agree, 5 - Strongly Agree.';
+        if (questionType === 'likert-na') {
+          textToSpeak += ' Or say "Not Applicable" to skip.';
+        }
       }
     } else if (questionType === 'multiple-select' && questionOptions.length > 0) {
       textToSpeak += '. Options are: ' + questionOptions.join(', ');
