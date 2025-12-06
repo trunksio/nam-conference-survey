@@ -8,6 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500&display=swap" rel="stylesheet">
+    <script>
+      // Prevent flash of wrong theme on page load
+      (function() {
+        const stored = localStorage.getItem('mantine-color-scheme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const colorScheme = stored || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-mantine-color-scheme', colorScheme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

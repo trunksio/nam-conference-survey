@@ -4,6 +4,9 @@ export const theme: MantineThemeOverride = createTheme({
   // Primary color: Equal Experts Blue
   primaryColor: 'equalBlue',
 
+  // Auto color scheme based on system preference with localStorage persistence
+  autoContrast: true,
+
   colors: {
     // Custom Equal Experts color palette
     equalBlue: [
@@ -121,11 +124,7 @@ export const theme: MantineThemeOverride = createTheme({
         shadow: 'sm',
         padding: 'lg',
         radius: 'md',
-      },
-      styles: {
-        root: {
-          border: '1px solid #e0e0e0',
-        },
+        withBorder: true,
       },
     },
   },
