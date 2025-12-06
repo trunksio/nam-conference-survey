@@ -1,4 +1,6 @@
 import { Card, Title, Text, Radio, Stack, Textarea } from '@mantine/core';
+import { AudioControls } from '../AudioControls';
+import { ParsedAnswer } from '../../utils/voiceAnswerParser';
 
 interface SingleChoiceQuestionProps {
   id: string;
@@ -9,6 +11,7 @@ interface SingleChoiceQuestionProps {
   onChange: (value: string) => void;
   comment?: string;
   onCommentChange?: (comment: string) => void;
+  audioEnabled?: boolean;
 }
 
 export function SingleChoiceQuestion({
@@ -20,7 +23,31 @@ export function SingleChoiceQuestion({
   onChange,
   comment,
   onCommentChange,
+  audioEnabled = false,
 }: SingleChoiceQuestionProps) {
+  const handleAudioAnswer = (answer: ParsedAnswer) => {
+    // If text is provided, try to match to an option value
+    if (answer.text) {
+      const matchedOption = options.find(opt =>
+        opt.label.toLowerCase() === answer.text?.toLowerCase() ||
+        opt.value.toLowerCase() === answer.text?.toLowerCase()
+      );
+
+      if (matchedOption) {
+        onChange(matchedOption.value);
+      } else if (onCommentChange) {
+        // If no match, append to comment
+        const existingComment = comment || '';
+        const newComment = existingComment
+          ? `${existingComment} ${answer.text}`
+          : answer.text;
+        onCommentChange(newComment);
+      }
+    }
+  };
+
+  const optionLabels = options.map(opt => opt.label);
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
@@ -31,6 +58,15 @@ export function SingleChoiceQuestion({
         <Text size="sm" c="dimmed">
           {transparency}
         </Text>
+
+        {audioEnabled && (
+          <AudioControls
+            questionText={question}
+            questionType="single-choice"
+            questionOptions={optionLabels}
+            onAnswerCaptured={handleAudioAnswer}
+          />
+        )}
 
         <Radio.Group value={value} onChange={onChange} name={id}>
           <Stack gap="sm">

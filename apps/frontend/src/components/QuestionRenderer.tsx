@@ -13,9 +13,10 @@ interface QuestionRendererProps {
   config: QuestionConfig;
   formData: SurveyFormState;
   updateField: <K extends keyof SurveyFormState>(field: K, value: SurveyFormState[K]) => void;
+  audioEnabled?: boolean;
 }
 
-function QuestionRendererComponent({ config, formData, updateField }: QuestionRendererProps) {
+function QuestionRendererComponent({ config, formData, updateField, audioEnabled = false }: QuestionRendererProps) {
   switch (config.type) {
     case 'likert':
       return (
@@ -29,6 +30,7 @@ function QuestionRendererComponent({ config, formData, updateField }: QuestionRe
           comment={formData[config.commentField] as string}
           onCommentChange={(comment) => updateField(config.commentField, comment)}
           commentPlaceholder={config.commentPlaceholder}
+          audioEnabled={audioEnabled}
         />
       );
 
@@ -46,6 +48,7 @@ function QuestionRendererComponent({ config, formData, updateField }: QuestionRe
           onCommentChange={(comment) => updateField(config.commentField, comment)}
           commentPlaceholder={config.commentPlaceholder}
           commentLabel={config.commentLabel}
+          audioEnabled={audioEnabled}
         />
       );
 
@@ -69,6 +72,7 @@ function QuestionRendererComponent({ config, formData, updateField }: QuestionRe
               : undefined
           }
           commentPlaceholder={config.commentPlaceholder}
+          audioEnabled={audioEnabled}
         />
       );
 
@@ -87,6 +91,7 @@ function QuestionRendererComponent({ config, formData, updateField }: QuestionRe
               ? (comment) => updateField(config.commentField!, comment)
               : undefined
           }
+          audioEnabled={audioEnabled}
         />
       );
 
@@ -99,6 +104,7 @@ function QuestionRendererComponent({ config, formData, updateField }: QuestionRe
           options={config.options}
           rankings={formData[config.field] as Record<string, number>}
           onChange={(rankings) => updateField(config.field, rankings)}
+          audioEnabled={audioEnabled}
         />
       );
 
@@ -111,6 +117,7 @@ function QuestionRendererComponent({ config, formData, updateField }: QuestionRe
           value={formData[config.field] as string}
           onChange={(value) => updateField(config.field, value)}
           placeholder={config.placeholder}
+          audioEnabled={audioEnabled}
         />
       );
 
