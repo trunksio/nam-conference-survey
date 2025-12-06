@@ -1,4 +1,6 @@
 import { Card, Title, Text, Radio, Stack, Textarea } from '@mantine/core';
+import { AudioControls } from '../AudioControls';
+import { ParsedAnswer } from '../../utils/voiceAnswerParser';
 
 interface LikertOption {
   value: string;
@@ -17,6 +19,7 @@ interface LikertWithNAQuestionProps {
   onCommentChange?: (comment: string) => void;
   commentPlaceholder?: string;
   commentLabel?: string;
+  audioEnabled?: boolean;
 }
 
 const DEFAULT_OPTIONS: LikertOption[] = [
@@ -39,9 +42,30 @@ export function LikertWithNAQuestion({
   onCommentChange,
   commentPlaceholder = 'Share any additional thoughts...',
   commentLabel = 'Additional comments (optional)',
+  audioEnabled = false,
 }: LikertWithNAQuestionProps) {
   // Combine provided options with N/A option
   const allOptions = [...options, { value: 'NA', label: naLabel }];
+
+  const handleAudioAnswer = (answer: ParsedAnswer) => {
+    // Set N/A if indicated
+    if (answer.isNA) {
+      onChange('NA');
+    }
+    // Set score if provided
+    else if (answer.score !== undefined) {
+      onChange(answer.score.toString());
+    }
+
+    // Append additional text to comment if provided
+    if (answer.text && onCommentChange) {
+      const existingComment = comment || '';
+      const newComment = existingComment
+        ? `${existingComment} ${answer.text}`
+        : answer.text;
+      onCommentChange(newComment);
+    }
+  };
 
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -53,6 +77,15 @@ export function LikertWithNAQuestion({
         <Text size="sm" c="dimmed">
           {transparency}
         </Text>
+
+        {audioEnabled && (
+          <AudioControls
+            questionText={question}
+            questionType="likert-na"
+            questionOptions={allOptions.map((o) => o.label)}
+            onAnswerCaptured={handleAudioAnswer}
+          />
+        )}
 
         <Radio.Group
           value={value || ''}

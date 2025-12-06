@@ -17,14 +17,17 @@ import { IconAlertCircle, IconCheck } from '@tabler/icons-react';
 import { ProgressIndicator } from '../components/ProgressIndicator';
 import { QuestionRenderer } from '../components/QuestionRenderer';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { AudioModeToggle } from '../components/AudioModeToggle';
 import { SurveyFormState } from '../types/survey';
 import { submitSurvey } from '../api/survey';
 import { SURVEY_QUESTIONS, TOTAL_QUESTIONS } from '../config/survey-questions';
+import { useAudioSurvey } from '../hooks/useAudioSurvey';
 
 export default function SurveyPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isAudioEnabled, toggleAudioMode, isSupported } = useAudioSurvey();
 
   const [formData, setFormData] = useState<SurveyFormState>({
     q1OverallRating: null,
@@ -143,8 +146,13 @@ export default function SurveyPage() {
   return (
     <Container size="md" py="xl">
       <Stack gap="xl">
-        {/* Theme Toggle */}
+        {/* Theme Toggle and Audio Mode Toggle */}
         <Group justify="flex-end">
+          <AudioModeToggle
+            enabled={isAudioEnabled}
+            onToggle={toggleAudioMode}
+            isSupported={isSupported}
+          />
           <ThemeToggle />
         </Group>
 
@@ -187,6 +195,7 @@ export default function SurveyPage() {
             config={config}
             formData={formData}
             updateField={updateField}
+            audioEnabled={isAudioEnabled}
           />
         ))}
 

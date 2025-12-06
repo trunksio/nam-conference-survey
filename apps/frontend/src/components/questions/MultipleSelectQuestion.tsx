@@ -1,4 +1,6 @@
 import { Card, Title, Text, Checkbox, Stack, TextInput, Textarea } from '@mantine/core';
+import { AudioControls } from '../AudioControls';
+import { ParsedAnswer } from '../../utils/voiceAnswerParser';
 
 interface MultipleSelectQuestionProps {
   id: string;
@@ -12,6 +14,7 @@ interface MultipleSelectQuestionProps {
   comment?: string;
   onCommentChange?: (comment: string) => void;
   commentPlaceholder?: string;
+  audioEnabled?: boolean;
 }
 
 export function MultipleSelectQuestion({
@@ -26,7 +29,37 @@ export function MultipleSelectQuestion({
   comment,
   onCommentChange,
   commentPlaceholder = 'Share any additional thoughts...',
+  audioEnabled = false,
 }: MultipleSelectQuestionProps) {
+  const handleAudioAnswer = (answer: ParsedAnswer) => {
+    // Set selections if provided
+    if (answer.selections && answer.selections.length > 0) {
+      // Match selections to option values
+      const matchedValues = answer.selections
+        .map(selection => {
+          const option = options.find(opt =>
+            opt.label.toLowerCase() === selection.toLowerCase() ||
+            opt.value.toLowerCase() === selection.toLowerCase()
+          );
+          return option?.value;
+        })
+        .filter((val): val is string => val !== undefined);
+
+      onChange(matchedValues);
+    }
+
+    // If text is provided but no selections matched, append to comment
+    if (answer.text && onCommentChange) {
+      const existingComment = comment || '';
+      const newComment = existingComment
+        ? `${existingComment} ${answer.text}`
+        : answer.text;
+      onCommentChange(newComment);
+    }
+  };
+
+  const optionLabels = options.map(opt => opt.label);
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
@@ -37,6 +70,15 @@ export function MultipleSelectQuestion({
         <Text size="sm" c="dimmed">
           {transparency}
         </Text>
+
+        {audioEnabled && (
+          <AudioControls
+            questionText={question}
+            questionType="multiple-select"
+            questionOptions={optionLabels}
+            onAnswerCaptured={handleAudioAnswer}
+          />
+        )}
 
         <Checkbox.Group value={values} onChange={onChange}>
           <Stack gap="sm">

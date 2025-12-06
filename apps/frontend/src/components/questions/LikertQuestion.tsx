@@ -1,4 +1,6 @@
 import { Card, Title, Text, Radio, Stack, Textarea } from '@mantine/core';
+import { AudioControls } from '../AudioControls';
+import { ParsedAnswer } from '../../utils/voiceAnswerParser';
 
 interface LikertOption {
   value: string;
@@ -15,6 +17,7 @@ interface LikertQuestionProps {
   comment?: string;
   onCommentChange?: (comment: string) => void;
   commentPlaceholder?: string;
+  audioEnabled?: boolean;
 }
 
 const DEFAULT_OPTIONS: LikertOption[] = [
@@ -35,7 +38,24 @@ export function LikertQuestion({
   comment,
   onCommentChange,
   commentPlaceholder = 'Share any additional thoughts...',
+  audioEnabled = false,
 }: LikertQuestionProps) {
+  const handleAudioAnswer = (answer: ParsedAnswer) => {
+    // Set score if provided
+    if (answer.score !== undefined) {
+      onChange(answer.score);
+    }
+
+    // Append additional text to comment if provided
+    if (answer.text && onCommentChange) {
+      const existingComment = comment || '';
+      const newComment = existingComment
+        ? `${existingComment} ${answer.text}`
+        : answer.text;
+      onCommentChange(newComment);
+    }
+  };
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder>
       <Stack gap="md">
@@ -46,6 +66,15 @@ export function LikertQuestion({
         <Text size="sm" c="dimmed">
           {transparency}
         </Text>
+
+        {audioEnabled && (
+          <AudioControls
+            questionText={question}
+            questionType="likert"
+            questionOptions={options.map((o) => o.label)}
+            onAnswerCaptured={handleAudioAnswer}
+          />
+        )}
 
         <Radio.Group
           value={value?.toString() || ''}
